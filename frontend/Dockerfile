@@ -17,4 +17,4 @@ RUN npm install
 COPY . .
 
 # je lance le projet en mode développement
-CMD ["npm","run","start"]
+CMD ["npm","run","dev"]
