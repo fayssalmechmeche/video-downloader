@@ -79,7 +79,20 @@ function App() {
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 text-sm"
               />
 
-              <button className="px-4 py-3 bg-black text-white rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors">
+              <button
+                className="px-4 py-3 bg-black text-white rounded-lg font-medium text-sm hover:bg-gray-800 transition-colors"
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.readText().then((text) => {
+                    const input = document.querySelector(
+                      'input[name="url"]',
+                    ) as HTMLInputElement;
+                    if (input) {
+                      input.value = text;
+                    }
+                  });
+                }}
+              >
                 Coller
               </button>
             </div>
@@ -123,6 +136,7 @@ function App() {
                   : "bg-black text-white hover:bg-gray-800"
               }`}
               disabled={isDownloading}
+              type="button"
             >
               {isDownloading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -157,7 +171,8 @@ function App() {
       {/* Footer */}
       <footer className="px-4 py-8 text-center border-t border-gray-200">
         <p className="text-xs text-gray-400">
-          Aucune vidéo stockée sur nos serveurs
+          Aucune vidéo est conservée sur nos serveurs. Ells sont automatiquement
+          supprimées après le téléchargement.
         </p>
       </footer>
     </div>
