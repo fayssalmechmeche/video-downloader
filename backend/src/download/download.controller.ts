@@ -4,7 +4,10 @@ import { DownloadDto } from './dto/download.dto';
 import { Response } from 'express';
 import { createReadStream } from 'fs';
 import { unlink } from 'fs/promises';
+import { UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
+@UseGuards(ThrottlerGuard)
 @Controller('download')
 export class DownloadController {
   constructor(private readonly downloadService: DownloadService) {}

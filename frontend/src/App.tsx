@@ -17,9 +17,11 @@ function App() {
 
   const [quality, setQuality] = useState("best");
   const [isDownloading, setIsDownloading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDownload = async (data: DownloadFormValues) => {
     setIsDownloading(true);
+    setError(null);
     try {
       const response = await fetch("http://localhost:3000/download/video", {
         method: "POST",
@@ -30,7 +32,14 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error("Erreur lors du téléchargement de la vidéo");
+        if (response.status === 429) {
+          setError("Trop de téléchargements, attendez une minute.");
+        } else if (response.status === 400) {
+          setError("URL invalide ou non supportée.");
+        } else {
+          setError("Une erreur est survenue, réessayez.");
+        }
+        return;
       }
 
       const blob = await response.blob();
@@ -41,8 +50,8 @@ function App() {
       document.body.appendChild(a);
       a.click();
       a.remove();
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setError("Une erreur réseau est survenue, réessayez.");
     } finally {
       setIsDownloading(false);
     }
@@ -51,6 +60,7 @@ function App() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<DownloadFormValues>({
     resolver: zodResolver(downloadSchema),
@@ -84,12 +94,7 @@ function App() {
                 type="button"
                 onClick={() => {
                   navigator.clipboard.readText().then((text) => {
-                    const input = document.querySelector(
-                      'input[name="url"]',
-                    ) as HTMLInputElement;
-                    if (input) {
-                      input.value = text;
-                    }
+                    setValue("url", text);
                   });
                 }}
               >
@@ -136,7 +141,6 @@ function App() {
                   : "bg-black text-white hover:bg-gray-800"
               }`}
               disabled={isDownloading}
-              type="button"
             >
               {isDownloading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -148,6 +152,9 @@ function App() {
               )}
             </button>
           </div>
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
         </form>
 
         {/* Marquee - Supported Platforms */}
@@ -171,8 +178,8 @@ function App() {
       {/* Footer */}
       <footer className="px-4 py-8 text-center border-t border-gray-200">
         <p className="text-xs text-gray-400">
-          Aucune vidéo est conservée sur nos serveurs. Ells sont automatiquement
-          supprimées après le téléchargement.
+          Aucune vidéo est conservée sur nos serveurs. Elles sont
+          automatiquement supprimées après le téléchargement.
         </p>
       </footer>
     </div>
