@@ -9,11 +9,17 @@ import { promisify } from 'util';
 import { randomUUID } from 'crypto';
 
 const execPromise = promisify(exec);
+const ALLOWED_DOMAINS = ['tiktok.com', 'twitter.com', 'x.com', 'snapchat.com'];
 
 @Injectable()
 export class DownloadService {
   async downloadVideo(dto: DownloadDto): Promise<string> {
     const filename = `/tmp/${randomUUID()}.mp4`;
+
+    const urlDomain = new URL(dto.url).hostname;
+    if (!ALLOWED_DOMAINS.some((domain) => urlDomain.endsWith(domain))) {
+      throw new BadRequestException('URL invalide ou non supportée');
+    }
 
     try {
       const { stderr } = await execPromise(
