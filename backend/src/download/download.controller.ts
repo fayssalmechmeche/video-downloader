@@ -6,6 +6,7 @@ import { createReadStream } from 'fs';
 import { unlink } from 'fs/promises';
 import { UseGuards } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { extname } from 'path';
 
 @UseGuards(ThrottlerGuard)
 @Controller('download')
@@ -15,9 +16,20 @@ export class DownloadController {
   @Post('video')
   async downloadVideo(@Body() dto: DownloadDto, @Res() res: Response) {
     const filepath = await this.downloadService.downloadVideo(dto);
+    const ext = extname(filepath);
+    const mimeTypes: Record<string, string> = {
+      '.mp4': 'video/mp4',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.webp': 'image/webp',
+    };
 
-    res.setHeader('Content-Type', 'video/mp4');
-    res.setHeader('Content-Disposition', 'attachment; filename="video.mp4"');
+    res.setHeader('Content-Type', mimeTypes[ext] ?? 'application/octet-stream');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="download${ext}"`,
+    );
 
     const stream = createReadStream(filepath);
     stream.pipe(res);

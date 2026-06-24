@@ -11,7 +11,6 @@ function App() {
     "Instagram",
     "Snapchat",
     "Facebook",
-    "Youtube",
     "Vimeo",
   ];
 
@@ -32,12 +31,11 @@ function App() {
       });
 
       if (!response.ok) {
+        const data = await response.json();
         if (response.status === 429) {
           setError("Trop de téléchargements, attendez une minute.");
-        } else if (response.status === 400) {
-          setError("URL invalide ou non supportée.");
         } else {
-          setError("Une erreur est survenue, réessayez.");
+          setError(data.message ?? "Une erreur est survenue, réessayez.");
         }
         return;
       }
@@ -153,7 +151,10 @@ function App() {
             </button>
           </div>
           {error && (
-            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+            <div className="max-w-2xl mx-auto mt-4 mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <span className="text-red-500 text-xl">⚠️</span>
+              <p className="text-red-600 text-sm font-medium">{error}</p>
+            </div>
           )}
         </form>
 
