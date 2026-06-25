@@ -12,8 +12,7 @@ import { unlink } from 'fs/promises';
 
 const execPromise = promisify(exec);
 const ALLOWED_DOMAINS = ['tiktok.com', 'twitter.com', 'x.com', 'snapchat.com'];
-// const MAX_SIZE = 100 * 1024 * 1024; // 100MB
-const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
 @Injectable()
 export class DownloadService {
