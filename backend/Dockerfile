@@ -17,5 +17,8 @@ RUN npm install
 # je copie tous les fichiers du projet dans le conteneur
 COPY . .
 
+# je construis le projet
+RUN npm run build
+
 # je lance le projet en mode production
 CMD ["npm", "run", "start:prod"]
